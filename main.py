@@ -22,22 +22,22 @@ maxY = 4.5
 # minY = -3.0
 # maxY = 4.0
 
-sizeSwarm = 100
+sizeSwarm = 50
 globalBestAdaptation = math.inf
-globalBestCoord = np.array([0.0, 0.0])
+globalBestCoord = [0.0, 0.0]
 theBestIter = 0
-x = []
-y = []
+xChart = []
+yChart = []
 iterChart = 0
 amountIter = 50
 
 
 class Particle(object):
     def __init__(self, x, y):
-        self.coord = np.array([x, y], dtype=np.float64)
-        self.velocity = 0
+        self.coord = [x,y]
+        self.velocity = [0.0,0.0]
         self.actualAdaptation = math.inf
-        self.bestCoord = np.array([0, 0])
+        self.bestCoord = [0.0,0.0]
         self.bestAdaptation = math.inf
         self.updateAdaptation(0)
 
@@ -48,30 +48,38 @@ class Particle(object):
         self.actualAdaptation = adaptation(self.coord[0], self.coord[1])
         if (self.bestAdaptation > self.actualAdaptation):
             self.bestAdaptation = self.actualAdaptation
-            self.bestCoord = np.copy(self.coord)
+            self.bestCoord = self.coord.copy()
         if (globalBestAdaptation > self.actualAdaptation):
             globalBestAdaptation = self.actualAdaptation
-            globalBestCoord = np.copy(self.coord)
+            globalBestCoord = self.coord.copy()
             theBestIter = i
 
     def getInerita(self):
-        return inerita * self.velocity
+        return [inerita * self.velocity[0],inerita * self.velocity[1] ]
 
     def getCognitiveCoefficient(self):
-        return cognitiveCoefficient * random.uniform(0, 1) * (self.bestCoord - self.coord)
+        x=cognitiveCoefficient * random.uniform(0, 1) * (self.bestCoord[0] - self.coord[0])
+        y=cognitiveCoefficient * random.uniform(0, 1) * (self.bestCoord[1] - self.coord[1])
+        return [x,y]
 
 
     def getSocialFactor(self):
         global globalBestCoord
-        return socialFactor * random.uniform(0, 1) * (globalBestCoord - self.coord)
+        x= socialFactor * random.uniform(0, 1) * (globalBestCoord[0] - self.coord[0])
+        y= socialFactor * random.uniform(0, 1) * (globalBestCoord[1] - self.coord[1])
+        return [x,y]
 
     def updateVelocity(self):
-        global x
-        global y
-        self.velocity = self.getInerita() + self.getCognitiveCoefficient() + self.getSocialFactor()
-        self.coord += self.velocity
-        x.append(self.coord[0])
-        y.append(self.coord[1])
+        global xChart
+        global yChart
+        compInerita = self.getInerita()
+        compCC = self.getCognitiveCoefficient()
+        compSF = self.getSocialFactor()
+        self.velocity = [compInerita[0]+compSF[0]+compCC[0],compInerita[1]+compSF[1]+compCC[1]]
+        self.coord[0] += self.velocity[0]
+        self.coord[1] += self.velocity[1]
+        xChart.append(self.coord[0])
+        yChart.append(self.coord[1])
 
 
 def generateSwarm(n):
@@ -89,37 +97,38 @@ def adaptation(x, y):
 
 def animation_frame(i):
     global iterChart
-    chart.set_xdata(x[iterChart:iterChart + 100])
-    chart.set_ydata(y[iterChart:iterChart + 100])
+    chart.set_xdata(xChart[iterChart:iterChart + sizeSwarm])
+    chart.set_ydata(yChart[iterChart:iterChart + sizeSwarm])
     ax.set_title(i)
-    iterChart += 100
+    iterChart += sizeSwarm
     return chart
 
 
 if __name__ == '__main__':
-    for z in range(10):
+    for z in range(5):
         k=random.uniform(-4,4)
         k2 = random.uniform(-4, 4)
         arr = [k, k2]
         print("--------------------------------")
         swarm = []
         globalBestAdaptation = math.inf
-        globalBestCoord = np.array([0, 0])
+        globalBestCoord = [0.0,0.0]
         theBestIter = 0
         fx = []
         fy = []
-        x = [0]*sizeSwarm
-        y = [0]*sizeSwarm
+        xChart = [0] * sizeSwarm
+        yChart = [0] * sizeSwarm
         iterChart = 0
         generateSwarm(sizeSwarm)
         for particle in swarm:
             fx.append(particle.coord[0])
             fy.append(particle.coord[1])
-            x.append(particle.coord[0])
-            y.append(particle.coord[1])
+            xChart.append(particle.coord[0])
+            yChart.append(particle.coord[1])
         fiqa, az = plt.subplots()
         az.set_xlim(minX, maxX)
         az.set_ylim(minY, maxY)
+        az.set_title(z)
         chart2, = az.plot(fx, fy, 'o')
         plt.show()
         plt.close(fiqa)
@@ -139,6 +148,7 @@ if __name__ == '__main__':
             lastY.append(particle.coord[1])
             lastAdapt.append(particle.actualAdaptation)
         ax.scatter(lastX, lastY, lastAdapt)
+        ax.set_title(z)
         plt.show()
         plt.close(fig)
         fig, ax = plt.subplots()
