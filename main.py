@@ -105,7 +105,7 @@ def animation_frame(i):
 
 
 if __name__ == '__main__':
-    for z in range(5):
+    for z in range(2):
         k=random.uniform(-4,4)
         k2 = random.uniform(-4, 4)
         arr = [k, k2]
@@ -118,6 +118,12 @@ if __name__ == '__main__':
         fy = []
         xChart = [0] * sizeSwarm
         yChart = [0] * sizeSwarm
+        print("XXXXX")
+        print(fx)
+        print(fy)
+        print(yChart)
+        print(xChart)
+        print("XXXXX")
         iterChart = 0
         generateSwarm(sizeSwarm)
         for particle in swarm:
@@ -125,10 +131,11 @@ if __name__ == '__main__':
             fy.append(particle.coord[1])
             xChart.append(particle.coord[0])
             yChart.append(particle.coord[1])
+        #Rysowanie wykresu początkowego
         fiqa, az = plt.subplots()
         az.set_xlim(minX, maxX)
         az.set_ylim(minY, maxY)
-        az.set_title(z)
+        az.set_title(z+1)
         chart2, = az.plot(fx, fy, 'o')
         plt.show()
         plt.close(fiqa)
@@ -137,9 +144,6 @@ if __name__ == '__main__':
                 particle.updateVelocity()
             for particle in swarm:
                 particle.updateAdaptation(i)
-
-        fig = plt.figure(figsize=(8, 8))
-        ax = fig.add_subplot(projection='3d')
         lastX = []
         lastY = []
         lastAdapt = []
@@ -147,10 +151,23 @@ if __name__ == '__main__':
             lastX.append(particle.coord[0])
             lastY.append(particle.coord[1])
             lastAdapt.append(particle.actualAdaptation)
-        ax.scatter(lastX, lastY, lastAdapt)
-        ax.set_title(z)
+        # Rysowanie wykresu 3d
+        fig2 = plt.figure(figsize=(8, 8))
+        ax2 = fig2.add_subplot(projection='3d')
+        ax2.scatter(lastX, lastY, lastAdapt)
+        ax2.set_xlim(minX, maxX)
+        ax2.set_ylim(minY, maxY)
+        ax2.set_title(z+1)
         plt.show()
-        plt.close(fig)
+        plt.close(fig2)
+        #Rysowanie wykresu 3
+        fiqa, az = plt.subplots()
+        az.set_xlim(minX, maxX)
+        az.set_ylim(minY, maxY)
+        az.set_title(z + 1)
+        chart2, = az.plot(lastX, lastY, 'o')
+        plt.show()
+        plt.close(fiqa)
         fig, ax = plt.subplots()
         ax.set_xlim(minX, maxX)
         ax.set_ylim(minY, maxY)
