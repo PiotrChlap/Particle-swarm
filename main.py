@@ -6,21 +6,15 @@ from matplotlib.animation import FuncAnimation
 import warnings
 
 warnings.filterwarnings('error')
+#Piotr Chłapiński 229853, Maciej Urbański 230030
 
-inerita = 0.2
-cognitiveCoefficient = 1.0
-socialFactor = 1.0
+inerita = 0.3
+cognitiveCoefficient = 0.5
+socialFactor = 0.8
 swarm = []
 
-minX = -4.5
-maxX = 4.5
-minY = -4.5
-maxY = 4.5
 
-# minX = -1.5
-# maxX = 4.0
-# minY = -3.0
-# maxY = 4.0
+
 
 sizeSwarm = 50
 globalBestAdaptation = math.inf
@@ -29,7 +23,7 @@ theBestIter = 0
 xChart = []
 yChart = []
 iterChart = 0
-amountIter = 50
+amountIter = 100
 
 
 class Particle(object):
@@ -87,12 +81,12 @@ def generateSwarm(n):
     for i in range(n):
         swarm.append(Particle(random.uniform(minX, maxX), random.uniform(minY, maxY)))
 
-
-def adaptation(x, y):
+#funkcja 1
+def adaptation1(x, y):
     return ((1.5 - x + x * y) ** 2) + ((2.25 - x + x * (y ** 2)) ** 2) + ((2.625 - x + x * (y ** 3)) ** 2)
-
-# def adaptation(x, y):
-#     return np.sin(x + y) + (x - y)**2 - 1.5 * x + 2.5 * y + 1
+#funkcja 2
+def adaptation2(x, y):
+    return np.sin(x + y) + (x - y)**2 - 1.5 * x + 2.5 * y + 1
 
 
 def animation_frame(i):
@@ -105,7 +99,28 @@ def animation_frame(i):
 
 
 if __name__ == '__main__':
-    for z in range(2):
+    f=0
+    while(f!= 1 and f!=2):
+        f = input("Wybierz funkcję\n1.((1.5 - x + x * y) ** 2) + ((2.25 - x + x * (y ** 2)) ** 2) + ((2.625 - x + x * (y ** 3)) ** 2)\n2. np.sin(x + y) + (x - y)**2 - 1.5 * x + 2.5 * y + 1:\n")
+        try:
+            f = int(f)
+        except:
+            f=0
+            print("Niepoprawny numer funkcji!")
+    if(f==1):
+        adaptation = adaptation1
+        minX = -4.5
+        maxX = 4.5
+        minY = -4.5
+        maxY = 4.5
+    else:
+        adaptation = adaptation2
+        minX = -1.5
+        maxX = 4.0
+        minY = -3.0
+        maxY = 4.0
+
+    for z in range(5):
         k=random.uniform(-4,4)
         k2 = random.uniform(-4, 4)
         arr = [k, k2]
@@ -118,12 +133,6 @@ if __name__ == '__main__':
         fy = []
         xChart = [0] * sizeSwarm
         yChart = [0] * sizeSwarm
-        print("XXXXX")
-        print(fx)
-        print(fy)
-        print(yChart)
-        print(xChart)
-        print("XXXXX")
         iterChart = 0
         generateSwarm(sizeSwarm)
         for particle in swarm:
@@ -135,6 +144,8 @@ if __name__ == '__main__':
         fiqa, az = plt.subplots()
         az.set_xlim(minX, maxX)
         az.set_ylim(minY, maxY)
+        az.set_xlabel('x', fontsize=16)
+        az.set_ylabel('y', fontsize=16)
         az.set_title(z+1)
         chart2, = az.plot(fx, fy, 'o')
         plt.show()
@@ -157,6 +168,9 @@ if __name__ == '__main__':
         ax2.scatter(lastX, lastY, lastAdapt)
         ax2.set_xlim(minX, maxX)
         ax2.set_ylim(minY, maxY)
+        ax2.set_xlabel('x', fontsize=16)
+        ax2.set_ylabel('y', fontsize=16)
+        ax2.set_zlabel('f(x,y)', fontsize=16)
         ax2.set_title(z+1)
         plt.show()
         plt.close(fig2)
@@ -164,6 +178,8 @@ if __name__ == '__main__':
         fiqa, az = plt.subplots()
         az.set_xlim(minX, maxX)
         az.set_ylim(minY, maxY)
+        az.set_xlabel('x', fontsize=16)
+        az.set_ylabel('y', fontsize=16)
         az.set_title(z + 1)
         chart2, = az.plot(lastX, lastY, 'o')
         plt.show()
@@ -171,6 +187,8 @@ if __name__ == '__main__':
         fig, ax = plt.subplots()
         ax.set_xlim(minX, maxX)
         ax.set_ylim(minY, maxY)
+        ax.set_xlabel('x', fontsize=16)
+        ax.set_ylabel('y', fontsize=16)
         chart, = ax.plot(0, 0, 'o')
         animation = FuncAnimation(fig, func=animation_frame, frames=amountIter, interval=500 )
         animation.save('coil' + str(z) + '.gif')
